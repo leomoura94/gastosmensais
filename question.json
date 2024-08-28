@@ -1,0 +1,21 @@
+[
+    {
+        "question": "Qual é a capital da França?",
+        "answers": [
+            {"text": "Paris - certa", "correct": true},
+            {"text": "Londres", "correct": false},
+            {"text": "Berlim", "correct": false},
+            {"text": "Madri", "correct": false}
+        ]
+    },
+    {
+        "question": "Qual é a capital da Alemanha?",
+        "answers": [
+            {"text": "Paris", "correct": false},
+            {"text": "Londres", "correct": false},
+            {"text": "Berlim - certa", "correct": true},
+            {"text": "Madri", "correct": false}
+        ]
+    }
+    // Adicione mais perguntas aqui
+]
