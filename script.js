@@ -1,123 +1,95 @@
-let gastos = JSON.parse(localStorage.getItem("gastos")) || [];
-let entradas = JSON.parse(localStorage.getItem("entradas")) || [];
+const categorias = [
+  "Condomínio", "IPTU", "Minha Casa Minha Vida", "Fatura Cartão de Crédito", "Luz", "Gás", "Internet",
+  "Academia", "Dívida (Leo)", "Celular Camila", "Celular Leo", "Faculdade", "Spotify", "Streaming",
+  "Mesada Vó Nilza", "Diarista", "Psicólogas", "Supermercado", "Combustível", "Animal de Estimação",
+  "Farmácia", "Impostos", "Supérfluos", "Almoço (trabalho)", "Barbearia", "Estacionamento",
+  "Gastos Desconhecidos", "Lavagem do Carro", "Emergências", "Presentes", "Restaurante",
+  "Roupas e Calçados", "Conserto de roupa", "Salão de Beleza I Esteticista", "Utensílios Domésticos",
+  "Viagens", "Aniversário Cami I Leo", "Uber", "Saúde", "Doações"
+];
 
-const form = document.getElementById("gastoForm");
+const gastoForm = document.getElementById("gastoForm");
 const saldoForm = document.getElementById("saldoForm");
-const resetarBtn = document.getElementById("resetar");
+const categoriaSelect = document.getElementById("categoria");
+const historicoEl = document.getElementById("historico");
 const saldoBancoEl = document.getElementById("saldoBanco");
 const totalGastoEl = document.getElementById("totalGasto");
-const historicoEl = document.getElementById("historico");
-const ctx = document.getElementById("graficoGastos").getContext("2d");
+const resetBtn = document.getElementById("resetBtn");
+
+let gastos = JSON.parse(localStorage.getItem("gastos") || "[]");
+let saldos = JSON.parse(localStorage.getItem("saldos") || "[]");
+
+categorias.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c;
+  opt.textContent = c;
+  categoriaSelect.appendChild(opt);
+});
 
 function formatarMoeda(valor) {
   return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-function calcularTotais() {
-  const totalEntradas = entradas.reduce((acc, e) => acc + e.valor, 0);
-  const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
-  const saldoAtual = totalEntradas - totalGastos;
-  return { totalEntradas, totalGastos, saldoAtual };
-}
-
 function atualizarPainel() {
-  const { totalEntradas, totalGastos, saldoAtual } = calcularTotais();
-  saldoBancoEl.textContent = formatarMoeda(saldoAtual);
+  const totalGastos = gastos.reduce((acc, g) => acc + g.valor, 0);
+  const totalSaldos = saldos.reduce((acc, s) => acc + s.valor, 0);
+  saldoBancoEl.textContent = formatarMoeda(totalSaldos - totalGastos);
   totalGastoEl.textContent = formatarMoeda(totalGastos);
   localStorage.setItem("gastos", JSON.stringify(gastos));
-  localStorage.setItem("entradas", JSON.stringify(entradas));
-  atualizarGrafico();
+  localStorage.setItem("saldos", JSON.stringify(saldos));
   renderizarHistorico();
-}
-
-let grafico = new Chart(ctx, {
-  type: "doughnut",
-  data: {
-    labels: [],
-    datasets: [{
-      label: "Gastos por Categoria",
-      data: [],
-      backgroundColor: ["#f87171", "#60a5fa", "#34d399", "#fbbf24", "#a78bfa", "#fb7185"],
-    }],
-  },
-  options: {
-    plugins: {
-      legend: { labels: { color: "#ccc" } },
-    },
-  },
-});
-
-function atualizarGrafico() {
-  const categorias = {};
-  gastos.forEach((g) => {
-    categorias[g.categoria] = (categorias[g.categoria] || 0) + g.valor;
-  });
-  grafico.data.labels = Object.keys(categorias);
-  grafico.data.datasets[0].data = Object.values(categorias);
-  grafico.update();
 }
 
 function renderizarHistorico() {
   historicoEl.innerHTML = "";
-  const todosMovimentos = [
-    ...entradas.map((e) => ({ tipo: "entrada", quem: e.quem, valor: e.valor, descricao: e.descricao, data: new Date(e.data) })),
-    ...gastos.map((g) => ({ tipo: "gasto", quem: g.quem, valor: g.valor, categoria: g.categoria, pagamento: g.tipo, data: new Date(g.data) })),
-  ];
-  todosMovimentos.sort((a, b) => b.data - a.data);
-  const porMes = {};
+  const todos = [
+    ...saldos.map(s => ({ ...s, tipo: "entrada" })),
+    ...gastos.map(g => ({ ...g, tipo: "gasto" }))
+  ].sort((a, b) => new Date(b.data) - new Date(a.data));
 
-  todosMovimentos.forEach((mov) => {
-    const mes = mov.data.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
-    if (!porMes[mes]) porMes[mes] = [];
-    porMes[mes].push(mov);
+  todos.forEach(mov => {
+    const div = document.createElement("div");
+    const data = new Date(mov.data).toLocaleDateString("pt-BR");
+    if (mov.tipo === "entrada") {
+      div.innerHTML = `<span class="text-green-600">[+]</span> ${mov.quem}: ${formatarMoeda(mov.valor)} – ${mov.descricao} (${data})`;
+    } else {
+      div.innerHTML = `<span class="text-red-600">[-]</span> ${mov.quem}: ${formatarMoeda(mov.valor)} – ${mov.categoria} (${mov.tipo}) (${data})`;
+    }
+    historicoEl.appendChild(div);
   });
-
-  for (const mes in porMes) {
-    const bloco = document.createElement("div");
-    bloco.innerHTML = `<h3 class="font-bold mb-2">${mes}</h3>`;
-    porMes[mes].forEach((mov) => {
-      let texto = "";
-      if (mov.tipo === "entrada") {
-        texto = `<span class="text-green-500">+ ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.descricao}`;
-      } else {
-        texto = `<span class="text-red-500">- ${formatarMoeda(mov.valor)}</span> – ${mov.quem} | ${mov.categoria} (${mov.pagamento})`;
-      }
-      const linha = document.createElement("p");
-      linha.className = "text-gray-300";
-      linha.innerHTML = `${mov.data.toLocaleDateString("pt-BR")} - ${texto}`;
-      bloco.appendChild(linha);
-    });
-    historicoEl.appendChild(bloco);
-  }
 }
 
-form.addEventListener("submit", (e) => {
+gastoForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const quem = document.getElementById("quem").value;
   const valor = parseFloat(document.getElementById("valor").value);
-  const categoria = document.getElementById("categoria").value.trim();
+  const categoria = document.getElementById("categoria").value;
   const tipo = document.getElementById("tipo").value;
-  if (!valor || valor <= 0 || categoria === "") return alert("Preencha corretamente.");
-  gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
-  form.reset();
-  atualizarPainel();
+
+  if (valor > 0) {
+    gastos.push({ quem, valor, categoria, tipo, data: new Date().toISOString() });
+    gastoForm.reset();
+    atualizarPainel();
+  }
 });
 
 saldoForm.addEventListener("submit", (e) => {
   e.preventDefault();
   const quem = document.getElementById("quemSaldo").value;
   const valor = parseFloat(document.getElementById("valorSaldo").value);
-  const descricao = document.getElementById("descricaoSaldo").value.trim();
-  if (!valor || valor <= 0 || descricao === "") return alert("Preencha corretamente.");
-  entradas.push({ quem, valor, descricao, data: new Date().toISOString() });
-  saldoForm.reset();
-  atualizarPainel();
+  const descricao = document.getElementById("descricaoSaldo").value;
+
+  if (valor > 0) {
+    saldos.push({ quem, valor, descricao, data: new Date().toISOString() });
+    saldoForm.reset();
+    atualizarPainel();
+  }
 });
 
-resetarBtn.addEventListener("click", () => {
+resetBtn.addEventListener("click", () => {
   if (confirm("Tem certeza que deseja resetar tudo?")) {
     gastos = [];
-    entradas = [];
+    saldos = [];
     localStorage.clear();
     atualizarPainel();
   }
