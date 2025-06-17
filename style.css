@@ -1,63 +1,82 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f3f4f6;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
   color: #333;
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
 }
 
 .container {
-  width: 100%;
   max-width: 800px;
-  background: white;
+  margin: auto;
   padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
-h1, h2 {
-  text-align: center;
-  margin-bottom: 1rem;
+h1 {
+  color: #00796b;
 }
 
 .form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-input, select, button {
-  padding: 0.8rem;
+.form input,
+.form select {
+  padding: 10px;
+  border-radius: 6px;
   border: 1px solid #ccc;
-  border-radius: 0.5rem;
+  flex: 1;
+  min-width: 150px;
 }
 
-button {
-  background: #10b981;
+.form button {
+  background: #00796b;
   color: white;
-  cursor: pointer;
+  padding: 10px 20px;
   border: none;
-  transition: background 0.3s;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-button:hover {
-  background: #059669;
+.form button:hover {
+  background: #004d40;
 }
 
 .painel {
-  text-align: center;
-  margin: 1rem 0;
+  background: #ffffffdd;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 10px #ccc;
+}
+
+.btn-reset {
+  margin-top: 1rem;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-reset:hover {
+  background-color: #b71c1c;
 }
 
 .historico {
-  margin-top: 2rem;
-  max-height: 300px;
-  overflow-y: auto;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+  text-align: left;
 }
 
-.historico p {
-  font-size: 0.9rem;
-  margin: 0.2rem 0;
+#historico {
+  max-height: 300px;
+  overflow-y: auto;
 }
