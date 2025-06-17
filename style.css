@@ -1,11 +1,63 @@
-.campo {
-  @apply p-3 rounded-lg border border-gray-300;
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
 }
 
-.botao {
-  @apply text-white px-4 py-3 rounded-lg font-semibold transition;
+.container {
+  width: 100%;
+  max-width: 800px;
+  background: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+input, select, button {
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 0.5rem;
+}
+
+button {
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #059669;
 }
 
 .painel {
-  @apply bg-gray-100 p-4 rounded-xl shadow;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.historico {
+  margin-top: 2rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.historico p {
+  font-size: 0.9rem;
+  margin: 0.2rem 0;
 }
