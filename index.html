@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Controle de Gastos</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="style.css"/>
-  </head>
-  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-4xl p-6 bg-white shadow-xl rounded-xl space-y-6">
-      <h1 class="text-3xl font-bold text-center text-gray-800">💸 Controle de Gastos</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Gastos</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Controle de Gastos</h1>
 
-      <!-- Formulário de Gasto -->
-      <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
-        <select id="quem" class="campo">
-          <option value="Leonardo">Leonardo</option>
-          <option value="Camila">Camila</option>
-        </select>
-        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required/>
-        <select id="categoria" class="campo" required></select>
-        <select id="tipo" class="campo">
-          <option value="Pix">Pix</option>
-          <option value="Débito">Débito</option>
-          <option value="Crédito">Crédito</option>
-        </select>
-        <button type="submit" class="botao bg-green-600 hover:bg-green-700">Adicionar Gasto</button>
-      </form>
+    <!-- Formulário para adicionar gasto -->
+    <form id="gastoForm" class="form">
+      <select id="quem">
+        <option value="Leonardo">Leonardo</option>
+        <option value="Camila">Camila</option>
+      </select>
+      <input type="number" id="valor" placeholder="Valor (R$)" required />
+      <select id="categoria">
+        <!-- Categorias serão preenchidas via JS -->
+      </select>
+      <select id="tipo">
+        <option value="pix">Pix</option>
+        <option value="debito">Débito</option>
+        <option value="credito">Crédito</option>
+      </select>
+      <button type="submit">Adicionar Gasto</button>
+    </form>
 
-      <!-- Formulário de Saldo -->
-      <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <select id="quemSaldo" class="campo">
-          <option value="Leonardo">Leonardo</option>
-          <option value="Camila">Camila</option>
-        </select>
-        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar" class="campo" required/>
-        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="campo" required/>
-        <button type="submit" class="botao bg-blue-600 hover:bg-blue-700">Adicionar Saldo</button>
-      </form>
+    <!-- Formulário para adicionar saldo -->
+    <form id="saldoForm" class="form">
+      <select id="quemSaldo">
+        <option value="Leonardo">Leonardo</option>
+        <option value="Camila">Camila</option>
+      </select>
+      <input type="number" id="valorSaldo" placeholder="Valor a adicionar" required />
+      <input type="text" id="descricaoSaldo" placeholder="Descrição" required />
+      <button type="submit">Adicionar Saldo</button>
+    </form>
 
-      <!-- Painel de Resumo -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-        <div class="painel">
-          <p class="text-gray-500">Saldo</p>
-          <p id="saldoBanco" class="text-lg font-semibold">R$ 0,00</p>
-        </div>
-        <div class="painel">
-          <p class="text-gray-500">Total Gasto</p>
-          <p id="totalGasto" class="text-lg font-semibold">R$ 0,00</p>
-        </div>
-        <div class="painel">
-          <button id="resetBtn" class="botao w-full bg-red-600 hover:bg-red-700 mt-2">🔁 Resetar Tudo</button>
-        </div>
-      </div>
-
-      <!-- Histórico -->
-      <div class="bg-gray-50 p-4 rounded-xl max-h-60 overflow-y-auto">
-        <h2 class="font-bold text-lg mb-2">📜 Histórico</h2>
-        <div id="historico" class="space-y-2 text-sm"></div>
-      </div>
-
+    <!-- Painel resumo -->
+    <div class="painel">
+      <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
+      <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
+      <button id="resetar">🔁 Resetar Tudo</button>
     </div>
 
-    <script src="script.js"></script>
-  </body>
+    <!-- Gráfico pizza -->
+    <canvas id="graficoPizza" height="100"></canvas>
+
+    <!-- Gráfico escadinha -->
+    <canvas id="graficoEscada" height="100"></canvas>
+
+    <!-- Histórico -->
+    <div class="historico">
+      <h2>📜 Histórico de Movimentações</h2>
+      <div id="historico"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
 </html>
