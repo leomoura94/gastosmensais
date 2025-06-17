@@ -1,65 +1,55 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Controle de Gastos</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-  <div class="container">
-    <h1>Controle de Gastos</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Gastos</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Controle de Gastos</h1>
 
-    <!-- Formulário para adicionar gasto -->
-    <form id="gastoForm" class="form">
-      <select id="quem">
-        <option value="Leonardo">Leonardo</option>
-        <option value="Camila">Camila</option>
-      </select>
-      <input type="number" id="valor" placeholder="Valor (R$)" required />
-      <select id="categoria">
-        <!-- Categorias serão preenchidas via JS -->
-      </select>
-      <select id="tipo">
-        <option value="pix">Pix</option>
-        <option value="debito">Débito</option>
-        <option value="credito">Crédito</option>
-      </select>
-      <button type="submit">Adicionar Gasto</button>
-    </form>
+      <form id="saldoForm" class="form">
+        <select id="pessoaSaldo">
+          <option value="Leonardo">Leonardo</option>
+          <option value="Camila">Camila</option>
+        </select>
+        <input type="number" id="valorSaldo" placeholder="Valor (R$)" required />
+        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" required />
+        <button type="submit">Adicionar Saldo</button>
+      </form>
 
-    <!-- Formulário para adicionar saldo -->
-    <form id="saldoForm" class="form">
-      <select id="quemSaldo">
-        <option value="Leonardo">Leonardo</option>
-        <option value="Camila">Camila</option>
-      </select>
-      <input type="number" id="valorSaldo" placeholder="Valor a adicionar" required />
-      <input type="text" id="descricaoSaldo" placeholder="Descrição" required />
-      <button type="submit">Adicionar Saldo</button>
-    </form>
+      <form id="gastoForm" class="form">
+        <select id="quem">
+          <option value="Leonardo">Leonardo</option>
+          <option value="Camila">Camila</option>
+        </select>
+        <input type="number" id="valor" placeholder="Valor (R$)" required />
+        <select id="categoria" required></select>
+        <select id="tipo">
+          <option value="Pix">Pix</option>
+          <option value="Débito">Débito</option>
+          <option value="Crédito">Crédito</option>
+        </select>
+        <button type="submit">Adicionar Gasto</button>
+      </form>
 
-    <!-- Painel resumo -->
-    <div class="painel">
-      <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
-      <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
-      <button id="resetar">🔁 Resetar Tudo</button>
+      <div class="painel">
+        <p><strong>Saldo no banco:</strong> <span id="saldoBanco">R$ 0,00</span></p>
+        <p><strong>Total gasto:</strong> <span id="totalGasto">R$ 0,00</span></p>
+        <button id="resetar" class="btn-reset">🔄 Resetar Tudo</button>
+      </div>
+
+      <canvas id="graficoGastos"></canvas>
+
+      <section class="historico">
+        <h2>📜 Histórico de Movimentações</h2>
+        <div id="historico"></div>
+      </section>
     </div>
 
-    <!-- Gráfico pizza -->
-    <canvas id="graficoPizza" height="100"></canvas>
-
-    <!-- Gráfico escadinha -->
-    <canvas id="graficoEscada" height="100"></canvas>
-
-    <!-- Histórico -->
-    <div class="historico">
-      <h2>📜 Histórico de Movimentações</h2>
-      <div id="historico"></div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
