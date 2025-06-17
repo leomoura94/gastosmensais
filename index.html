@@ -1,231 +1,60 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Questionário</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-        #quiz {
-            width: 80%;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .question {
-            font-size: 1.2em;
-            margin-bottom: 20px;
-        }
-        .answers {
-            list-style-type: none;
-            padding: 0;
-        }
-        .answer {
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-        .answer.correct {
-            background-color: #d4edda;
-            border-color: #c3e6cb;
-        }
-        .answer.incorrect {
-            background-color: #f8d7da;
-            border-color: #f5c6cb;
-        }
-        .button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-        #restart, #next, #prev, #review {
-            display: none;
-        }
-        .review-mode .answer {
-            cursor: default;
-        }
-    </style>
-</head>
-<body>
-    <div id="quiz"></div>
-    <button id="prev" class="button">Pergunta Anterior</button>
-    <button id="next" class="button">Próxima Pergunta</button>
-    <button id="restart" class="button">Reiniciar Questionário</button>
-    <button id="review" class="button">Revisar Perguntas</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle de Gastos</title>
+    <link href="style.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div class="min-h-screen flex flex-col items-center justify-center p-4 space-y-6">
+      <h1 class="text-3xl font-bold">Controle de Gastos</h1>
 
-    <script>
-        // Dados das perguntas e respostas
-        const questions = [
-            {
-                question: "Qual é a capital da França?",
-                answers: [
-                    { text: "Paris - certa", correct: true },
-                    { text: "Londres", correct: false },
-                    { text: "Berlim", correct: false },
-                    { text: "Madri", correct: false }
-                ]
-            },
-            {
-                question: "Qual é a capital da Alemanha?",
-                answers: [
-                    { text: "Paris", correct: false },
-                    { text: "Londres", correct: false },
-                    { text: "Berlim - certa", correct: true },
-                    { text: "Madri", correct: false }
-                ]
-            }
-            // Adicione mais perguntas aqui
-        ];
+      <!-- Adicionar Gasto -->
+      <form id="gastoForm" class="grid grid-cols-1 sm:grid-cols-5 gap-4 w-full max-w-3xl">
+        <select id="quem" class="campo"> <option>Leonardo</option> <option>Camila</option> </select>
+        <input type="number" step="0.01" id="valor" placeholder="Valor (R$)" class="campo" required />
+        <input type="text" id="categoria" placeholder="Categoria" class="campo" required />
+        <select id="tipo" class="campo">
+          <option value="pix">Pix</option>
+          <option value="debito">Débito</option>
+          <option value="credito">Crédito</option>
+        </select>
+        <button type="submit" class="btn-verde">Adicionar Gasto</button>
+      </form>
 
-        let currentQuestionIndex = 0;
-        let answers = [];
+      <!-- Adicionar Saldo -->
+      <form id="saldoForm" class="grid grid-cols-1 sm:grid-cols-4 gap-4 w-full max-w-3xl">
+        <select id="quemSaldo" class="campo"> <option>Leonardo</option> <option>Camila</option> </select>
+        <input type="number" step="0.01" id="valorSaldo" placeholder="Valor a adicionar (R$)" class="campo" required />
+        <input type="text" id="descricaoSaldo" placeholder="Descrição (ex: Salário)" class="campo" required />
+        <button type="submit" class="btn-azul">Adicionar Saldo</button>
+      </form>
 
-        const quizContainer = document.getElementById('quiz');
-        const prevButton = document.getElementById('prev');
-        const nextButton = document.getElementById('next');
-        const restartButton = document.getElementById('restart');
-        const reviewButton = document.getElementById('review');
+      <!-- Resumo -->
+      <div class="caixa">
+        <h2 class="font-semibold mb-2">Resumo</h2>
+        <p>Saldo no banco: <span id="saldoBanco">R$ 0,00</span></p>
+        <p>Total gasto: <span id="totalGasto">R$ 0,00</span></p>
+      </div>
 
-        function showQuestion(question) {
-            quizContainer.innerHTML = `
-                <div class="question">${question.question}</div>
-                <ul class="answers">
-                    ${question.answers.map((answer, index) => `
-                        <li class="answer" data-index="${index}" data-correct="${answer.correct}">
-                            ${answer.text}
-                        </li>
-                    `).join('')}
-                </ul>
-            `;
-        }
+      <!-- Gráfico -->
+      <div class="caixa">
+        <canvas id="graficoGastos"></canvas>
+      </div>
 
-        function handleAnswerClick(event) {
-            if (event.target.classList.contains('answer')) {
-                const isCorrect = event.target.getAttribute('data-correct') === 'true';
-                const index = event.target.getAttribute('data-index');
-                answers[currentQuestionIndex] = { index, isCorrect };
+      <!-- Histórico -->
+      <section class="caixa">
+        <h2 class="font-semibold mb-4">📜 Histórico de Movimentações</h2>
+        <div id="historico" class="space-y-2 max-h-[300px] overflow-y-auto text-sm"></div>
+      </section>
 
-                const allAnswers = document.querySelectorAll('.answer');
-                allAnswers.forEach(answer => {
-                    if (answer.getAttribute('data-correct') === 'true') {
-                        answer.classList.add('correct');
-                    } else {
-                        answer.classList.add('incorrect');
-                    }
-                    answer.removeEventListener('click', handleAnswerClick);
-                });
+      <!-- Botão Reset -->
+      <button id="resetar" class="btn-vermelho">🔁 Resetar Tudo</button>
+    </div>
 
-                if (isCorrect) {
-                    event.target.classList.add('correct');
-                } else {
-                    event.target.classList.add('incorrect');
-                }
-
-                nextButton.style.display = 'block';
-                prevButton.style.display = 'block';
-            }
-        }
-
-        function showResult() {
-            const correctAnswers = answers.filter(answer => answer.isCorrect).length;
-            const totalQuestions = questions.length;
-            quizContainer.innerHTML = `
-                <div class="result">
-                    <h2>Fim do Questionário!</h2>
-                    <p>Você acertou ${correctAnswers} de ${totalQuestions} perguntas.</p>
-                    <p>Clique em "Reiniciar Questionário" para jogar novamente ou "Revisar Perguntas" para ver as respostas.</p>
-                </div>
-            `;
-            nextButton.style.display = 'none';
-            prevButton.style.display = 'none';
-            restartButton.style.display = 'block';
-            reviewButton.style.display = 'block';
-        }
-
-        function showReview() {
-            quizContainer.innerHTML = `
-                <div class="review">
-                    ${questions.map((question, index) => `
-                        <div class="question">${question.question}</div>
-                        <ul class="answers">
-                            ${question.answers.map((answer, i) => `
-                                <li class="answer ${answers[index] && answers[index].index == i ? 
-                                    (answer.correct ? 'correct' : 'incorrect') 
-                                    : ''}" data-index="${i}">
-                                    ${answer.text}
-                                </li>
-                            `).join('')}
-                        </ul>
-                    `).join('')}
-                </div>
-            `;
-            nextButton.style.display = 'none';
-            prevButton.style.display = 'none';
-            restartButton.style.display = 'none';
-            reviewButton.style.display = 'none';
-        }
-
-        function handleNextClick() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                showQuestion(questions[currentQuestionIndex]);
-                prevButton.style.display = 'block';
-                if (currentQuestionIndex === questions.length - 1) {
-                    nextButton.style.display = 'none';
-                }
-            } else {
-                showResult();
-            }
-        }
-
-        function handlePrevClick() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                showQuestion(questions[currentQuestionIndex]);
-                nextButton.style.display = 'block';
-                if (currentQuestionIndex === 0) {
-                    prevButton.style.display = 'none';
-                }
-            }
-        }
-
-        function restartQuiz() {
-            currentQuestionIndex = 0;
-            answers = [];
-            showQuestion(questions[currentQuestionIndex]);
-            restartButton.style.display = 'none';
-            reviewButton.style.display = 'none';
-            nextButton.style.display = 'block';
-            prevButton.style.display = 'none';
-        }
-
-        // Iniciar o questionário ao carregar a página
-        showQuestion(questions[currentQuestionIndex]);
-        quizContainer.addEventListener('click', handleAnswerClick);
-        nextButton.addEventListener('click', handleNextClick);
-        prevButton.addEventListener('click', handlePrevClick);
-        restartButton.addEventListener('click', restartQuiz);
-        reviewButton.addEventListener('click', showReview);
-
-        // Inicializa os botões
-        prevButton.style.display = 'none';
-        nextButton.style.display = 'block';
-    </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
